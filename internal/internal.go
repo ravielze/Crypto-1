@@ -7,8 +7,9 @@ type (
 		Key() string
 	}
 
-	Cipher interface {
+	BytesCipher interface {
 		Encrypt(plain []byte) []byte
 		Decrypt(cipher []byte) []byte
+		Key() []byte
 	}
 )
