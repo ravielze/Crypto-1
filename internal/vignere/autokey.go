@@ -7,26 +7,34 @@ import (
 
 type (
 	autokeyVigenere struct {
-		key string
+		key         string
+		lastAutokey string
 	}
 )
 
+func (a *autokeyVigenere) Metadata() map[string]any {
+	return map[string]any{
+		"last_autokey": a.lastAutokey,
+	}
+}
+
 func NewAutoKey(key string) internal.AlphabetCipher {
-	return autokeyVigenere{
+	return &autokeyVigenere{
 		key: key,
 	}
 }
 
-func (a autokeyVigenere) Key() string {
+func (a *autokeyVigenere) Key() string {
 	return a.key
 }
 
-func (a autokeyVigenere) Encrypt(plaintext string) string {
+func (a *autokeyVigenere) Encrypt(plaintext string) string {
 	key := utils.Equalize(plaintext, a.key)
+	a.lastAutokey = key
 	return NewStandard(key).Encrypt(plaintext)
 }
 
-func (a autokeyVigenere) Decrypt(ciphertext string) string {
+func (a *autokeyVigenere) Decrypt(ciphertext string) string {
 	plaintext := ""
 	j := 0
 	key := a.key
@@ -43,5 +51,6 @@ func (a autokeyVigenere) Decrypt(ciphertext string) string {
 		j = (j + 1) % len(key)
 		plaintext += string(c)
 	}
+	a.lastAutokey = key
 	return plaintext
 }

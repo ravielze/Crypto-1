@@ -11,6 +11,10 @@ type (
 	}
 )
 
+func (s standardVigenere) Metadata() map[string]any {
+	return map[string]any{}
+}
+
 func (s standardVigenere) Key() string {
 	return s.key
 }
