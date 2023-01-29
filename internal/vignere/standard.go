@@ -6,24 +6,24 @@ import (
 )
 
 type (
-	standardVigenere struct {
+	standard struct {
 		key string
 	}
 )
 
-func (s standardVigenere) Metadata() map[string]any {
+func (s standard) Metadata() map[string]any {
 	return map[string]any{}
 }
 
-func (s standardVigenere) Key() string {
+func (s standard) Key() string {
 	return s.key
 }
 
 func NewStandard(key string) internal.AlphabetCipher {
-	return standardVigenere{key}
+	return standard{key}
 }
 
-func (s standardVigenere) Encrypt(plaintext string) string {
+func (s standard) Encrypt(plaintext string) string {
 	ciphertext := ""
 	key := utils.Normalize(s.key)
 	j := 0
@@ -42,7 +42,7 @@ func (s standardVigenere) Encrypt(plaintext string) string {
 	return ciphertext
 }
 
-func (s standardVigenere) Decrypt(ciphertext string) string {
+func (s standard) Decrypt(ciphertext string) string {
 	plaintext := ""
 	j := 0
 	key := s.key
