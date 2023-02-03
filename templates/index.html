@@ -28,7 +28,7 @@
       }
     </style>
     <!-- Custom styles for this template -->
-    <link href="starter-template.css" rel="stylesheet">
+    <link href="http://127.0.0.1:8000/templates/starter-template.css" rel="stylesheet">
   </head>
   <body>
   <div class="col-lg-8 mx-auto p-3 py-md-5">
@@ -49,7 +49,8 @@
       <p class="fs-5 col-md-8">Quickly and easily get started with Bootstrap's compile.</p>
 
       <div class="mb-4">
-        <select class="form-select" aria-label="Default select example">
+        <label for="algorithm" class="form-label">Algorithm</label>
+        <select class="form-select" aria-label="Default select example" id="algorithm">
           <option value="1">Standard Vigenere Cipher</option>
           <option value="2">Auto-key Vigenere Cipher</option>
           <option value="3">Extended Vigenere Cipher</option>
