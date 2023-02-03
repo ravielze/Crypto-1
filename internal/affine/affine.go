@@ -12,7 +12,27 @@ type (
 		m int
 		n int
 	}
+
+	affineString struct {
+		operator internal.BytesCipher
+	}
 )
+
+func (a *affineString) Encrypt(plaintext string) string {
+	return string(a.operator.Encrypt([]byte(plaintext)))
+}
+
+func (a *affineString) Decrypt(ciphertext string) string {
+	return string(a.operator.Decrypt([]byte(ciphertext)))
+}
+
+func (a *affineString) Key() string {
+	return string(a.operator.Key())
+}
+
+func (a *affineString) Metadata() map[string]any {
+	return a.operator.Metadata()
+}
 
 func (a *affine) Metadata() map[string]any {
 	return map[string]any{
@@ -23,6 +43,10 @@ func (a *affine) Metadata() map[string]any {
 
 func New(m, n int) internal.BytesCipher {
 	return &affine{m, n}
+}
+
+func NewString(m, n int) internal.AlphabetCipher {
+	return &affineString{operator: New(m, n)}
 }
 
 func (a *affine) Encrypt(plain []byte) []byte {

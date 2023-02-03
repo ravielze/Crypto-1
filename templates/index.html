@@ -28,7 +28,7 @@
       }
     </style>
     <!-- Custom styles for this template -->
-    <link href="http://127.0.0.1:8000/templates/starter-template.css" rel="stylesheet">
+    <link href="./starter-template.css" rel="stylesheet">
   </head>
   <body>
   <div class="col-lg-8 mx-auto p-3 py-md-5">
@@ -46,52 +46,116 @@
 
     <main>
       <h1>Tugas 1</h1>
-      <p class="fs-5 col-md-8">Quickly and easily get started with Bootstrap's compile.</p>
+      <p class="fs-5 col-md-8">13519002 Steven Nataniel</p>
+      <p class="fs-5 col-md-8">13519013 Christopher Justine</p>
 
       <div class="mb-4">
         <label for="algorithm" class="form-label">Algorithm</label>
         <select class="form-select" aria-label="Default select example" id="algorithm">
-          <option value="1">Standard Vigenere Cipher</option>
-          <option value="2">Auto-key Vigenere Cipher</option>
-          <option value="3">Extended Vigenere Cipher</option>
-          <option value="4">Affine Cipher</option>
-          <option value="5">Playfair Cipher</option>
-          <option value="6">Hill Cipher</option>
+          <option value="stdvignere">Standard Vigenere Cipher</option>
+          <option value="akyvignere">Auto-key Vigenere Cipher</option>
+          <option value="extvignere">Extended Vigenere Cipher</option>
+          <option value="affine">Affine Cipher</option>
+          <option value="playfair">Playfair Cipher</option>
+          <option value="hill">Hill Cipher</option>
         </select>
       </div>
 
       <div class="mb-3">
-        <label for="text" class="form-label">Input Text</label>
+        <label for="text" class="form-label">Text</label>
         <textarea class="form-control" id="text" rows="3"></textarea>
       </div>
 
-      <div class="mb-3">
-        <label for="key" class="form-label">Input Key</label>
+      <div class="mb-3" id="key-box">
+        <label for="key" class="form-label">Key</label>
         <input class="form-control" id="key" type="text">
+<!--        <input class="form-control" id="m" type="number" min="0" max="256">-->
+<!--        <input class="form-control" id="n" type="number" min="0" max="256">-->
       </div>
 
-      <div class="mb-3">
-        <label for="formFile" class="form-label">Input File</label>
+      <div class="mb-3" id="m-box">
+        <label for="key-m" class="form-label">Key: M</label>
+        <input class="form-control" id="key-m" type="number" min="1" max="256">
+      </div>
+      <div class="mb-3" id="n-box">
+        <label for="key-n" class="form-label">Key: N</label>
+        <input class="form-control" id="key-n" type="number" min="1" max="256">
+      </div>
+
+      <div class="mb-3" id="file-box">
+        <label for="formFile" class="form-label">File</label>
         <input class="form-control" type="file" id="formFile">
       </div>
 
       <div class="mb-3">
         <label for="selectAction" class="form-label">Action</label>
         <select class="form-select" aria-label="Default select example" id="selectAction">
-          <option value="1">Encrypt</option>
-          <option value="2">Decrypt</option>
+          <option value="encrypt">Encrypt</option>
+          <option value="decrypt">Decrypt</option>
         </select>
       </div>
 
-      <div class="d-grid gap-2">
-        <button class="btn btn-primary" type="button">Calculate</button>
+      <div class="d-grid gap-2 mb-3">
+        <button class="btn btn-primary" type="button" id="calc-button">Calculate</button>
+      </div>
+
+      <div class="mb-3">
+        <label for="result-text" class="form-label">Result</label>
+        <input class="form-control" id="result-text" type="text" value="" disabled>
       </div>
 
     </main>
     <footer class="pt-5 my-5 text-muted border-top">
-      Created by the Bootstrap team &middot; &copy; 2021
+      IF4020 Kriptografi &middot; &copy; 2023
     </footer>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    document.getElementById('file-box').hidden = true;
+    document.getElementById('m-box').hidden = true;
+    document.getElementById('n-box').hidden = true;
+    document.getElementById('algorithm').addEventListener('change', function (event){
+      if (event.target.value === 'extvignere' || event.target.value === 'affine') {
+        document.getElementById('file-box').hidden = false;
+        if (event.target.value === 'affine'){
+          document.getElementById('m-box').hidden = false;
+          document.getElementById('n-box').hidden = false;
+          document.getElementById('key-box').hidden = true;
+        } else {
+          document.getElementById('key-box').hidden = false;
+        }
+      } else {
+        document.getElementById('file-box').hidden = true;
+        document.getElementById('m-box').hidden = true;
+        document.getElementById('n-box').hidden = true;
+        document.getElementById('key-box').hidden = false;
+      }
+      document.getElementById("result-text").value = "";
+    });
+    document.getElementById("result-text").value = "";
+    document.getElementById('calc-button').addEventListener('click', function (){
+      const key = document.getElementById('key').value;
+      const text = document.getElementById('text').value;
+      const m = +document.getElementById('key-m').value;
+      const n = +document.getElementById('key-n').value;
+      const method = document.getElementById('algorithm').value;
+      if ((key.length <= 0 && method != 'affine')  || text.length <= 0) {
+        alert('Key/Text must not empty.')
+        return;
+      }
+      const action = document.getElementById('selectAction').value;
+      (async function() {
+        const result = await fetch('/api/alphabet/' + method + '/' +  action, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({text,key,m,n})
+        }).then(res => res.json()).catch(()=>{});
+        document.getElementById("result-text").value = result.result;
+      })();
+    });
+  </script>
   </body>
 </html>
