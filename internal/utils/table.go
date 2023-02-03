@@ -55,6 +55,18 @@ func (table *Table) ShiftHorizontal(i1, i2 int, n int) (int, int) {
 	i1 = table.convertRowAndColumnToIndex(row1, (col1+n)%5)
 	i2 = table.convertRowAndColumnToIndex(row2, (col2+n)%5)
 
+	if (col1+n)%5 >= 0 {
+		i1 = table.convertRowAndColumnToIndex(row1, (col1+n)%5)
+	} else {
+		i1 = table.convertRowAndColumnToIndex(row1, 5+(col1+n)%5)
+	}
+
+	if (col2+n)%5 >= 0 {
+		i2 = table.convertRowAndColumnToIndex(row2, (col2+n)%5)
+	} else {
+		i2 = table.convertRowAndColumnToIndex(row2, 5+(col2+n)%5)
+	}
+
 	return i1, i2
 }
 
@@ -62,8 +74,17 @@ func (table *Table) ShiftVertical(i1, i2 int, n int) (int, int) {
 	row1, col1 := table.convertIndexToRowAndColumn(i1)
 	row2, col2 := table.convertIndexToRowAndColumn(i2)
 
-	i1 = table.convertRowAndColumnToIndex((row1+n)%5, col1)
-	i2 = table.convertRowAndColumnToIndex((row2+n)%5, col2)
+	if (row1+n)%5 >= 0 {
+		i1 = table.convertRowAndColumnToIndex((row1+n)%5, col1)
+	} else {
+		i1 = table.convertRowAndColumnToIndex(5+(row1+n)%5, col1)
+	}
+
+	if (row2+n)%5 >= 0 {
+		i2 = table.convertRowAndColumnToIndex((row2+n)%5, col2)
+	} else {
+		i2 = table.convertRowAndColumnToIndex(5+(row2+n)%5, col2)
+	}
 
 	return i1, i2
 }

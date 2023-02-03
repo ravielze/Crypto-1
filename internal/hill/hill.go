@@ -16,16 +16,15 @@ func NewHill(key string) internal.AlphabetCipher {
 	return &hill{key}
 }
 
-func (h hill) Key() string {
+func (h *hill) Key() string {
 	return h.key
 }
 
-func (h hill) Metadata() map[string]any {
-	//TODO implement me
-	panic("implement me")
+func (h *hill) Metadata() map[string]any {
+	return map[string]any{}
 }
 
-func (h hill) Encrypt(plaintext string) string {
+func (h *hill) Encrypt(plaintext string) string {
 	key := utils.Normalize(h.key)
 	plaintext = utils.Normalize(plaintext)
 
@@ -41,7 +40,7 @@ func (h hill) Encrypt(plaintext string) string {
 	return Multiply(segmentedPlaintext, keyMatrix, size)
 }
 
-func (h hill) Decrypt(ciphertext string) string {
+func (h *hill) Decrypt(ciphertext string) string {
 	key := utils.Normalize(h.key)
 	ciphertext = utils.Normalize(ciphertext)
 

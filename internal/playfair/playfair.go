@@ -17,8 +17,7 @@ func NewPlayfair(key string) internal.AlphabetCipher {
 }
 
 func (p *playfair) Metadata() map[string]any {
-	//TODO implement me
-	panic("implement me")
+	return map[string]any{}
 }
 
 func (p *playfair) Key() string {
