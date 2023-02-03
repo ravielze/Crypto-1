@@ -20,7 +20,7 @@ func Modulo(a, m int) int {
 	return result
 }
 
-func ModInverse(a, m int) int {
+func ModuloInverse(a, m int) int {
 	a = Modulo(a, m)
 	for i := 1; i < m; i++ {
 		if (a*i)%m == 1 {
@@ -89,19 +89,17 @@ func (matrix *Matrix) Inverse() Matrix {
 
 	dense := matrix.ConvertMatrixToDense()
 
-	determinant := mat.Det(dense)
-	inverseDeterminant := ModInverse(int(determinant), 26)
-	if inverseDeterminant == -1 {
-		return nil
-	}
-
 	var inverseDense mat.Dense
 	err := inverseDense.Inverse(dense)
 	if err != nil {
 		return nil
 	}
 
+	determinant := mat.Det(dense)
 	inverseDense.Scale(determinant, &inverseDense)
+
+	inverseDeterminant := ModuloInverse(int(determinant), 26)
+	inverseDense.Scale(float64(inverseDeterminant), &inverseDense)
 
 	for i := 0; i < row; i++ {
 		for j := 0; j < col; j++ {
@@ -109,8 +107,6 @@ func (matrix *Matrix) Inverse() Matrix {
 			inverseDense.Set(i, j, round)
 		}
 	}
-
-	inverseDense.Scale(float64(inverseDeterminant), &inverseDense)
 
 	var result Matrix
 	result.ConvertDenseToMatrix(&inverseDense)
