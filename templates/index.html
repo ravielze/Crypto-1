@@ -100,7 +100,7 @@
 
       <div class="mb-3">
         <label for="result-text" class="form-label">Result</label>
-        <input class="form-control" id="result-text" type="text" value="" disabled>
+        <textarea class="form-control" id="result-text" rows="3" disabled></textarea>
       </div>
 
     </main>
@@ -138,22 +138,44 @@
       const m = +document.getElementById('key-m').value;
       const n = +document.getElementById('key-n').value;
       const method = document.getElementById('algorithm').value;
-      if ((key.length <= 0 && method != 'affine')  || text.length <= 0) {
+      const file = document.getElementById('formFile').files[0];
+
+      if (((key.length <= 0 && method !== 'affine')  || text.length <= 0) && file === null) {
         alert('Key/Text must not empty.')
         return;
       }
       const action = document.getElementById('selectAction').value;
-      (async function() {
-        const result = await fetch('/api/alphabet/' + method + '/' +  action, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({text,key,m,n})
-        }).then(res => res.json()).catch(()=>{});
-        document.getElementById("result-text").value = result.result;
-      })();
+
+      if ((method === 'affine' || method === 'extvignere') && file !== null) {
+        let formData = new FormData();
+        formData.append("file", file);
+        (async function() {
+          const result = await fetch('/api/file/' + method + '/' +  action, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({formData,key,m,n})
+          }).then(res => {
+            console.log(res)
+            return res.json()
+          }).catch(()=>{});
+          document.getElementById("result-text").value = result.result;
+        })();
+      } else {
+        (async function() {
+          const result = await fetch('/api/alphabet/' + method + '/' +  action, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({text,key,m,n})
+          }).then(res => res.json()).catch(()=>{});
+          document.getElementById("result-text").value = result.result;
+        })();
+      }
     });
   </script>
   </body>

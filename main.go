@@ -11,6 +11,7 @@ import (
 	"github.com/ravielze/Crypto-1/internal/vignere"
 	"html/template"
 	"io"
+	"mime/multipart"
 	"net/http"
 )
 
@@ -91,6 +92,52 @@ func main() {
 		return c.JSON(http.StatusOK, map[string]any{
 			"result": result,
 		})
+	})
+
+	e.POST("/api/file/:name/:type", func(c echo.Context) error {
+		type Request struct {
+			File *multipart.FileHeader `form:"file"`
+			Key  string                `json:"key"`
+			M    int                   `json:"m"`
+			N    int                   `json:"n"`
+		}
+		var req Request
+		if err := c.Bind(&req); err != nil {
+			return err
+		}
+		fmt.Println(req)
+		if len(req.Key) == 0 && c.Param("name") != "affine" {
+			return c.JSON(http.StatusBadRequest, map[string]any{"error": "key must not empty"})
+		}
+		file, err := req.File.Open()
+		if err != nil {
+			return err
+		}
+		byt, err := io.ReadAll(file)
+		if err != nil {
+			return err
+		}
+		method := map[string]internal.BytesCipher{
+			"extvignere": vignere.NewExtended([]byte(req.Key)),
+			"affine":     affine.New(req.M, req.N),
+		}
+		usedMethod, ok := method[c.Param("name")]
+		if !ok {
+			return c.JSON(http.StatusBadRequest, map[string]any{"error": "method name not found"})
+		}
+		var result []byte
+
+		if c.Param("type") == "encrypt" {
+			result = usedMethod.Encrypt(byt)
+		} else {
+			result = usedMethod.Decrypt(byt)
+		}
+
+		if c.Param("name") == "affine" && len(result) == 0 {
+			return c.JSON(http.StatusBadRequest, map[string]any{"error": "m and 256 are not coprime."})
+		}
+
+		return c.Blob(http.StatusOK, "*/*", result)
 	})
 
 	e.HideBanner = true
